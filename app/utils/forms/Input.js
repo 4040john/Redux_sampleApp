@@ -29,8 +29,10 @@ const styles = StyleSheet.create({
   },
   inputRevised: {
     width: '100%',
-    borderBottomWidth: 3,
-    borderBottomColor: 'red',
+    // borderBottomWidth: 3,
+    // borderBottomColor: 'red',
+    borderBottomWidth: 1,
+    borderBottomColor: '#fff',
     fontSize: 17,
     padding: 5,
     marginTop: 30,

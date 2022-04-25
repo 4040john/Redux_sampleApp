@@ -1,21 +1,14 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- * @flow strict-local
- */
 import React, {Component} from 'react';
-import {StyleSheet, View, Text} from 'react-native';
+import {StyleSheet, View, Text, Platform, Button} from 'react-native';
 import Input from '../../utils/forms/Input';
 
 class AuthForm extends Component {
   state = {
-    type: 'Register',
-    // type: 'Login',
-    action: 'Login',
-    action: '새로 등록할게요~',
-    hasErrors: true,
+    // type: 'Register',
+    type: '로그인', // 로그인 / 등록
+    action: '로그인', // 로그인 / 등록
+    actionMode: '회원가입', // 회원가입 / 로그인 화면으로
+    hasErrors: false,
     form: {
       email: {value: '', type: 'textInputRevised', rulese: {}, valid: false},
       password: {value: '', type: 'textInput', rulese: {}, valid: false},
@@ -38,7 +31,7 @@ class AuthForm extends Component {
   };
 
   confirmPassword = () =>
-    this.state.type != 'Login' ? (
+    this.state.type != '로그인' ? (
       <Input
         value={this.state.form.confirmPassword.value}
         type={this.state.form.confirmPassword.type}
@@ -48,6 +41,15 @@ class AuthForm extends Component {
         onChangeText={value => this.updateInput('confirmPassword', value)}
       />
     ) : null;
+  changeForm = () => {
+    const type = this.state.type;
+
+    this.setState({
+      type: type === '로그인' ? '등록' : '로그인',
+      action: type === '로그인' ? '등록' : '로그인',
+      actionMode: type === '로그인' ? '로그인 화면으로' : '회원가입',
+    });
+  };
 
   formHasErrors = () =>
     this.state.hasErrors ? (
@@ -93,6 +95,43 @@ class AuthForm extends Component {
         />
         {this.confirmPassword()}
         {this.formHasErrors()}
+        <View>
+          <View
+            style={{
+              ...Platform.select({
+                ios: {marginTop: 30},
+                android: {marginBottom: 10},
+              }),
+            }}>
+            <Button title={this.state.action} color="#48567f" />
+          </View>
+          <View
+            style={{
+              ...Platform.select({
+                ios: {marginTop: 15},
+                android: {marginBottom: 10},
+              }),
+            }}>
+            <Button
+              title={this.state.actionMode}
+              color="#48567f"
+              onPress={this.changeForm}
+            />
+          </View>
+          <View
+            style={{
+              ...Platform.select({
+                ios: {marginTop: 15},
+                android: {marginBottom: 10},
+              }),
+            }}>
+            <Button
+              title="비회원 로그인"
+              color="#48567f"
+              onPress={() => this.props.goWithoutLogin()}
+            />
+          </View>
+        </View>
       </View>
     );
   }
