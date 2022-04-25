@@ -11,7 +11,7 @@ import News from './components/news';
 const AuthStack = createStackNavigator();
 const MainScreenTab = createBottomTabNavigator();
 
-const isLoggedIn = true;
+const isLoggedIn = false;
 
 const AppTabComponent = () => {
   return (
@@ -24,7 +24,7 @@ const AppTabComponent = () => {
 
 export const RootNavigator = () => {
   return (
-    <AuthStack.Navigator>
+    <AuthStack.Navigator screenOptions={{headerShown: false}}>
       {isLoggedIn ? (
         <AuthStack.Screen name="Main" component={AppTabComponent} />
       ) : (
