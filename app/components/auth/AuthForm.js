@@ -4,6 +4,10 @@ import Input from '../../utils/forms/Input';
 import validationRules from '../../utils/forms/ValidationRules';
 import Logger from '../../utils/Logger';
 
+import {connect} from 'react-redux';
+import {SignIn, SignUp} from '../../store/actions/User_actions';
+import {bindActionCreators} from 'redux';
+
 class AuthForm extends Component {
   state = {
     // type: 'Register',
@@ -125,15 +129,9 @@ class AuthForm extends Component {
 
     if (isFormValide) {
       if (this.state.type === '로그인') {
-        console.log('로그인:');
-        for (let key in submittedForm) {
-          console.log(submittedForm[key]);
-        }
+        this.props.SignIn(submittedForm);
       } else {
-        console.log('회원가입:');
-        for (let key in submittedForm) {
-          console.log(submittedForm[key]);
-        }
+        this.props.SignUp(submittedForm);
       }
     } else {
       this.setState({
@@ -212,4 +210,14 @@ class AuthForm extends Component {
 
 const styles = StyleSheet.create({});
 
-export default AuthForm;
+function mapStateToProps(state) {
+  return {
+    User: state.User,
+  };
+}
+function mapDispatchToProps(dispatch) {
+  console.log('1111');
+  return bindActionCreators({SignIn, SignUp}, dispatch);
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(AuthForm);
