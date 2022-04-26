@@ -1,3 +1,4 @@
+import Logger from '../../utils/Logger';
 import {SIGN_IN, SIGN_UP} from '../types';
 
 export default function (state = {}, action) {
@@ -11,11 +12,13 @@ export default function (state = {}, action) {
         },
       };
     case 'SIGN_UP':
+      Logger.debug('signUp', action.payload);
       return {
         ...state,
         auth: {
-          email: action.payload.email || false,
-          token: action.payload.token || false,
+          userId: action.payload.localId || false,
+          token: action.payload.idToken || false,
+          refToken: action.payload.refreshToken || false,
         },
       };
     default:
