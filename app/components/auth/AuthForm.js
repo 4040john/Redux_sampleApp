@@ -1,6 +1,8 @@
 import React, {Component} from 'react';
 import {StyleSheet, View, Text, Platform, Button} from 'react-native';
 import Input from '../../utils/forms/Input';
+import validationRules from '../../utils/forms/ValidationRules';
+import Logger from '../../utils/Logger';
 
 class AuthForm extends Component {
   state = {
@@ -10,9 +12,32 @@ class AuthForm extends Component {
     actionMode: '회원가입', // 회원가입 / 로그인 화면으로
     hasErrors: false,
     form: {
-      email: {value: '', type: 'textInputRevised', rulese: {}, valid: false},
-      password: {value: '', type: 'textInput', rulese: {}, valid: false},
-      confirmPassword: {value: '', type: 'textInput', rulese: {}, valid: false},
+      email: {
+        value: '',
+        type: 'textInputRevised',
+        rules: {
+          isRequired: true,
+          isEmail: true,
+        },
+        valid: false,
+      },
+      password: {
+        value: '',
+        type: 'textInput',
+        rules: {
+          isRequired: true,
+          minimumLength: 6,
+        },
+        valid: false,
+      },
+      confirmPassword: {
+        value: '',
+        type: 'textInput',
+        rules: {
+          confirmPassword: 'password',
+        },
+        valid: false,
+      },
     },
   };
 
@@ -23,11 +48,16 @@ class AuthForm extends Component {
     let formCopy = this.state.form;
     formCopy[name].value = value;
 
+    //rules
+    let rules = formCopy[name].rules;
+    let valide = validationRules(value, rules, formCopy);
+    formCopy[name].valid = valide;
+
     this.setState({
       form: formCopy,
     });
 
-    console.log(this.state.form);
+    // Logger.debug('form', this.state.form);
   };
 
   confirmPassword = () =>
@@ -64,7 +94,7 @@ class AuthForm extends Component {
           style={{
             color: 'white',
             fontSize: 14,
-            fontweight: 'bold',
+            // fontweight: 'bold',
             textAlign: 'center',
             textAlignVertical: 'center',
           }}>
@@ -73,6 +103,45 @@ class AuthForm extends Component {
       </View>
     ) : null;
 
+  submitUser = () => {
+    //Init
+    let isFormValide = true;
+    let submittedForm = {};
+    const formCopy = this.state.form;
+
+    for (let key in formCopy) {
+      if (this.state.type === '로그인') {
+        if (key !== 'confirmPassword') {
+          isFormValide = isFormValide && formCopy[key].valid;
+          submittedForm[key] = formCopy[key].value;
+        }
+      } else {
+        isFormValide = isFormValide && formCopy[key].valid;
+        submittedForm[key] = formCopy[key].value;
+        // console.log('isFormValide', isFormValide);
+        // console.log('submittedForm[key]', submittedForm[key]);
+      }
+    }
+
+    if (isFormValide) {
+      if (this.state.type === '로그인') {
+        console.log('로그인:');
+        for (let key in submittedForm) {
+          console.log(submittedForm[key]);
+        }
+      } else {
+        console.log('회원가입:');
+        for (let key in submittedForm) {
+          console.log(submittedForm[key]);
+        }
+      }
+    } else {
+      this.setState({
+        hasErrors: true,
+      });
+    }
+  };
+
   render() {
     return (
       <View>
@@ -80,7 +149,7 @@ class AuthForm extends Component {
           value={this.state.form.email.value}
           type={this.state.form.email.type}
           autoCapitalize={'none'}
-          keyboardType={'email-address'}
+          keyboardType="email-address"
           placeholder="이메일 주소"
           placeholderTextColor="#ddd"
           onChangeText={value => this.updateInput('email', value)}
@@ -103,7 +172,11 @@ class AuthForm extends Component {
                 android: {marginBottom: 10},
               }),
             }}>
-            <Button title={this.state.action} color="#48567f" />
+            <Button
+              title={this.state.action}
+              color="#48567f"
+              onPress={this.submitUser}
+            />
           </View>
           <View
             style={{
