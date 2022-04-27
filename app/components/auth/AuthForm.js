@@ -7,6 +7,7 @@ import Logger from '../../utils/Logger';
 import {connect} from 'react-redux';
 import {SignIn, SignUp} from '../../store/actions/User_actions';
 import {bindActionCreators} from 'redux';
+import {setTokens} from '../../utils/Misc';
 
 class AuthForm extends Component {
   state = {
@@ -107,6 +108,17 @@ class AuthForm extends Component {
       </View>
     ) : null;
 
+  manageAccess = () => {
+    if (!this.props.User.auth.userId) {
+      this.setState({hasErrors: true});
+    } else {
+      setTokens(this.props.User.auth, () => {
+        this.setState({hasErrors: false});
+        this.props.goWithoutLogin();
+      });
+    }
+  };
+
   submitUser = () => {
     //Init
     let isFormValide = true;
@@ -129,9 +141,17 @@ class AuthForm extends Component {
 
     if (isFormValide) {
       if (this.state.type === '로그인') {
-        this.props.SignIn(submittedForm);
+        this.props.SignIn(
+          submittedForm.then(() => {
+            this.manageAccess();
+          }),
+        );
       } else {
-        this.props.SignUp(submittedForm);
+        this.props.SignUp(
+          submittedForm.then(() => {
+            this.manageAccess();
+          }),
+        );
       }
     } else {
       this.setState({
