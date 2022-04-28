@@ -76,6 +76,7 @@ class AuthForm extends Component {
         onChangeText={value => this.updateInput('confirmPassword', value)}
       />
     ) : null;
+
   changeForm = () => {
     const type = this.state.type;
 
@@ -109,6 +110,8 @@ class AuthForm extends Component {
     ) : null;
 
   manageAccess = () => {
+    console.log('props', this.props);
+    console.log('manageAccess', this.props.User.auth.userId);
     if (!this.props.User.auth.userId) {
       this.setState({hasErrors: true});
     } else {
@@ -141,17 +144,13 @@ class AuthForm extends Component {
 
     if (isFormValide) {
       if (this.state.type === '로그인') {
-        this.props.SignIn(
-          submittedForm.then(() => {
-            this.manageAccess();
-          }),
-        );
+        this.props.SignIn(submittedForm).then(() => {
+          this.manageAccess();
+        });
       } else {
-        this.props.SignUp(
-          submittedForm.then(() => {
-            this.manageAccess();
-          }),
-        );
+        this.props.SignUp(submittedForm).then(() => {
+          this.manageAccess();
+        });
       }
     } else {
       this.setState({

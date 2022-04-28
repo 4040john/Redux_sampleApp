@@ -15,6 +15,10 @@ import {
 } from 'react-native';
 import AuthLogo from './AuthLogo';
 import AuthForm from './AuthForm';
+import {getTokens, setTokens} from '../../utils/Misc';
+import {AutoSignIn} from '../../store/actions/User_actions';
+import {connect} from 'react-redux';
+import {bindActionCreators} from 'redux';
 
 class AuthComponent extends Component {
   state = {
@@ -24,6 +28,27 @@ class AuthComponent extends Component {
   goWithoutLogin = () => {
     this.props.navigation.navigate('AppTabComponent');
   };
+
+  componentDidMount() {
+    // '@winthary_app@userId',
+    // '@winthary_app@token',
+    // '@winthary_app@refToken',
+    getTokens(value => {
+      if (value[1][1] === null) {
+        this.setState({loading: false});
+      } else {
+        this.props.AutoSignIn(value[2][1]).then(() => {
+          if (!this.props.User.auth.token) {
+            this.setState({loading: false});
+          } else {
+            setTokens(this.props.User.auth, () => {
+              this.goWithoutLogin();
+            });
+          }
+        });
+      }
+    });
+  }
 
   render() {
     if (this.state.loading) {
@@ -61,4 +86,14 @@ const styles = StyleSheet.create({
   },
 });
 
-export default AuthComponent;
+function mapStateToProps(state) {
+  return {
+    User: state.User,
+  };
+}
+
+function mapDispatchToProps(dispatch) {
+  return bindActionCreators({AutoSignIn}, dispatch);
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(AuthComponent);
